@@ -25,3 +25,4 @@
 
 > import Control.Quiver.CSV.Decoder
 > import Control.Quiver.CSV.Encoder
+> import Control.Quiver.CSV.Extras
