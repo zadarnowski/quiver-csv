@@ -1,5 +1,5 @@
 Quiver combinators for cellular CSV data processing
-========================================
+===================================================
 
     Copyright © 2015 Patryk Zadarnowski «pat@jantar.org».
     All rights reserved.
