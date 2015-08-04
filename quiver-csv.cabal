@@ -1,5 +1,5 @@
 name:           quiver-csv
-version:        0.0.0.2
+version:        0.0.0.3
 synopsis:       Quiver combinators for cellular CSV data processing
 homepage:       https://github.com/zadarnowski/quiver-csv
 category:       Control
@@ -28,7 +28,7 @@ source-repository head
 source-repository this
   type:         git
   location:     https://github.com/zadarnowski/quiver-csv.git
-  tag:          0.0.0.2
+  tag:          0.0.0.3
 
 library
   hs-source-dirs:   src
@@ -37,6 +37,11 @@ library
 
   exposed-modules:
     Control.Quiver.CSV
+
+  other-modules:
+    Control.Quiver.CSV.Decoder
+    Control.Quiver.CSV.Encoder
+    Control.Quiver.CSV.Extras
 
   build-depends:
     base                    >= 4.8 && < 5,
