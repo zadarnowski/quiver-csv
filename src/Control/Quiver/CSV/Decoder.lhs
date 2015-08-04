@@ -26,7 +26,7 @@
 
 > import Data.ByteString (ByteString)
 > import Data.Cell
-> import Control.Quiver
+> import Control.Quiver.SP
 > import Control.Quiver.ByteString
 > import Control.Quiver.CSV.Extras
 
@@ -36,19 +36,19 @@
 > -- | A Quiver processor that parses a fragmented lazy representation
 > --   of a CSV file into a stream of cells.
 
-> decodeLazyCSV :: Functor f => SP Lazy.ByteString (Cell Lazy.ByteString) f (ParseResult ParseError)
-> decodeLazyCSV = fmap (snd.fst) (toChunks >->> decodeCSV >->> qpure_ (fmap Lazy.fromStrict))
+> decodeLazyCSV :: Functor f => SP Lazy.ByteString (Cell Lazy.ByteString) f CSVError
+> decodeLazyCSV = toChunks >->> decodeCSV >&> snd >->> sppure (fmap Lazy.fromStrict) >&> fst
 
 > -- | A Quiver processor that parses a fragmented strict representation
 > --   of a CSV file into a stream of cells.
 
-> decodeCSV :: Functor f => SP ByteString (Cell ByteString) f (ParseResult ParseError)
+> decodeCSV :: Functor f => SP ByteString (Cell ByteString) f CSVError
 > decodeCSV = decodeC
 >  where
 
     At the beginning of a new cell:
 
->   decodeC = consume () decodeC' (deliver ParseComplete)
+>   decodeC = consume () decodeC' (deliver SPComplete)
 >   decodeC' s =
 >     case ByteString.uncons s of
 >       Just (c, xs) ->
@@ -62,7 +62,7 @@
 
     After decodeC detects a CR:
 
->   decodeCr = consume () decodeCr' (deliver ParseComplete)
+>   decodeCr = consume () decodeCr' (deliver SPComplete)
 >   decodeCr' s =
 >     case ByteString.uncons s of
 >       Just (c, xs) ->

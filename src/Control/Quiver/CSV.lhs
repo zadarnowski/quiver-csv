@@ -14,11 +14,7 @@
 > {-# LANGUAGE PatternSynonyms #-}
 
 > module Control.Quiver.CSV (
->   ParseResult,
->    pattern ParseIncomplete,
->    pattern ParseComplete,
->    pattern ParseFailed,
->   ParseError (..),
+>   CSVError (..),
 >   decodeCSV, decodeLazyCSV,
 >   encodeCSV, encodeLazyCSV,
 > ) where

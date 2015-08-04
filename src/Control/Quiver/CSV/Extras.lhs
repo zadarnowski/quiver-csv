@@ -12,12 +12,8 @@
 > {-# LANGUAGE PatternSynonyms, ScopedTypeVariables #-}
 
 > module Control.Quiver.CSV.Extras (
->   ParseResult,
->   pattern ParseIncomplete,
->   pattern ParseComplete,
->   pattern ParseFailed,
->   ParseError (..),
->   (>:>), (*>:>),
+>   CSVError (..),
+>   (*>:>),
 >   deliverError,
 >   pattern LF,
 >   pattern CR,
@@ -30,31 +26,15 @@
 >   quoteSequence
 > ) where
 
-> import Control.Quiver
+> import Control.Quiver.SP
 > import Data.ByteString (ByteString)
 > import Data.Word
 
 > import qualified Data.ByteString as ByteString
 
-> -- | Codec result type.
-
-> type ParseResult e = Maybe (Maybe e)
-
-> -- | Codec result value indicating premature termination of the consumer.
-
-> pattern ParseIncomplete = Nothing
-
-> -- | Codec result value indicating successful processing of the entire input stream.
-
-> pattern ParseComplete = Just Nothing
-
-> -- | Codec result value indicating unsuccessful processing of the input stream.
-
-> pattern ParseFailed e = Just (Just e)
-
 > -- | Codec error type.
 
-> data ParseError =
+> data CSVError =
 
 >   -- | Input ends in a partial cell value.
 >   --   For encoder, this means that the last 'Cell' of the input stream specifies the 'EOP' delimiter instead of 'EOR' or 'EOT'.
@@ -69,18 +49,19 @@
 >   IncompleteRow
 >   deriving (Eq, Ord, Show, Enum)
 
-> infixr 1 >:>, *>:>
+> infixr 5 *>:>
 
-> (>:>) :: b -> P a' a b b' f (ParseResult e) -> P a' a b b' f (ParseResult e)
-> y >:> sp = produce y (const sp) (deliver ParseIncomplete)
+> -- | Emits a bytestring, filtering out the empty ones.
 
-> (*>:>) :: ByteString -> P a' a ByteString b' f (ParseResult e) -> P a' a ByteString b' f (ParseResult e)
+> (*>:>) :: ByteString -> P a' a ByteString b' f (SPResult e) -> P a' a ByteString b' f (SPResult e)
 > y *>:> sp
 >   | ByteString.null y = sp
->   | otherwise = produce y (const sp) (deliver ParseIncomplete)
+>   | otherwise = produce y (const sp) (deliver SPIncomplete)
 
-> deliverError :: e -> P a' a b b' f (ParseResult e)
-> deliverError = deliver . ParseFailed
+> -- | Delivers a simple stream processor failure.
+
+> deliverError :: e -> P a' a b b' f (SPResult e)
+> deliverError = deliver . SPFailed
 
 > -- | line byte value
 > pattern LF = 0x0A :: Word8

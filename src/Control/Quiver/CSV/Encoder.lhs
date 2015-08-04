@@ -22,7 +22,7 @@
 
 > import Data.ByteString (ByteString)
 > import Data.Cell
-> import Control.Quiver
+> import Control.Quiver.SP
 > import Control.Quiver.CSV.Extras
 
 > import qualified Data.ByteString as ByteString
@@ -32,11 +32,11 @@
 > --   of cells into a fragmented strict representation of a CSV file,
 > --   unconditionally quoting any field values with length greater than @n@.
 
-> encodeCSV :: Int -> SP (Cell ByteString) ByteString f (ParseResult ParseError)
+> encodeCSV :: Int -> SP (Cell ByteString) ByteString f CSVError
 > encodeCSV n = loop
 >  where
 
->   loop = consume () loop' (deliver ParseComplete)
+>   loop = consume () loop' (deliver SPComplete)
 >   loop' (Cell x EOP) = fieldDelimiter >:> quotePart x loop1
 >   loop' (Cell x EOC) = quoteField x (fieldSeparator  >:> loop2)
 >   loop' (Cell x EOR) = quoteField x (recordSeparator >:> loop)
@@ -60,11 +60,11 @@
 > --   of cells into a fragmented lazy representation of a CSV file,
 > --   unconditionally quoting any field values with length greater than @n@.
 
-> encodeLazyCSV :: Int -> SP (Cell Lazy.ByteString) ByteString f (ParseResult ParseError)
+> encodeLazyCSV :: Int -> SP (Cell Lazy.ByteString) ByteString f CSVError
 > encodeLazyCSV n = loop
 >  where
 
->   loop = consume () loop' (deliver ParseComplete)
+>   loop = consume () loop' (deliver SPComplete)
 >   loop' (Cell x EOP) = fieldDelimiter >:> quoteParts x loop1
 >   loop' (Cell x EOC) = quoteField x (fieldSeparator  >:> loop2)
 >   loop' (Cell x EOR) = quoteField x (recordSeparator >:> loop)
